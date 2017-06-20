@@ -219,3 +219,139 @@ el.previousElementSibling
 $(el).remove();
 /*——*/
 el.parentNode.removeChild(el);
+//33.移除class名
+$(el).removeClass(className);
+/*——*/
+if(el.classList){
+	el.classList.remove(className);
+}else{
+	el.className = el.className.replace(new RegExp('(^|\\b)' + className.split(' ').join('|') + '(\\b|$)', 'gi'), ' ');
+}
+//34.用参数里的东西替换元素
+$(el).replaceWith(string);
+/*——*/
+el.outerHTML = string;
+//35.设置attr
+$(el).attr("tabindex",3);
+/*——*/
+el.setAttribute('tabindex',3);
+//36.返回兄弟元素
+$(el).siblings();
+/*——*/
+Array.prototype.filter.call(el.parentNode.children, function(child){
+  return child !== el;
+});
+//37.绑定class
+$(el).toggleClass(className);
+/*——*/
+if (el.classList) {
+  el.classList.toggle(className);
+} else {
+  var classes = el.className.split(' ');
+  var existingIndex = classes.indexOf(className);
+
+  if (existingIndex >= 0)
+    classes.splice(existingIndex, 1);
+  else
+    classes.push(className);
+
+  el.className = classes.join(' ');
+}
+//事件篇
+//38.解绑jq事件
+$(el).off(eventName, eventHandler);
+/*——*/
+el.removeEventListener(eventName, eventHandler);
+//39.绑定事件on
+$(el).on(eventName, eventHandler);
+/*——*/
+el.addEventListener(eventName, eventHandler);
+//40.页面加载完后加载
+$(document).ready(function(){
+
+});
+/*——*/
+function ready(fn) {
+  if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading"){
+    fn();
+  } else {
+    document.addEventListener('DOMContentLoaded', fn);
+  }
+}
+//41.手动触发自定义事件
+$(el).trigger('my-event', {some: 'data'});
+/*——*/
+if (window.CustomEvent) {
+  var event = new CustomEvent('my-event', {detail: {some: 'data'}});
+} else {
+  var event = document.createEvent('CustomEvent');
+  event.initCustomEvent('my-event', true, true, {some: 'data'});
+}
+
+el.dispatchEvent(event);
+//42.手动触发已有事件
+$(el).trigger('my-event');
+/*——*/
+// 查看全部事件的列表: https://developer.mozilla.org/en-US/docs/Web/API/document.createEvent
+var event = document.createEvent('HTMLEvents');
+event.initEvent('change', true, false);
+el.dispatchEvent(event);
+//工具类篇
+//43.代理上下文环境
+$.proxy(fn, context);
+/*——*/
+fn.bind(context);
+//44.each循环
+$.each(array, function(i, item){
+
+});
+/*——*/
+array.forEach(function(item, i){
+
+});
+//45.深度继承
+$.extend(true, {}, objA, objB);
+/*——*/
+var deepExtend = function(out) {
+  out = out || {};
+
+  for (var i = 1; i < arguments.length; i++) {
+    var obj = arguments[i];
+
+    if (!obj)
+      continue;
+
+    for (var key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        if (typeof obj[key] === 'object')
+          out[key] = deepExtend(out[key], obj[key]);
+        else
+          out[key] = obj[key];
+      }
+    }
+  }
+
+  return out;
+};
+
+deepExtend({}, objA, objB);
+//46.浅复制
+$.extend({}, objA, objB);
+/*——*/
+var extend = function(out) {
+  out = out || {};
+
+  for (var i = 1; i < arguments.length; i++) {
+    if (!arguments[i])
+      continue;
+
+    for (var key in arguments[i]) {
+      if (arguments[i].hasOwnProperty(key))
+        out[key] = arguments[i][key];
+    }
+  }
+
+  return out;
+};
+
+extend({}, objA, objB);
