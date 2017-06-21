@@ -355,3 +355,45 @@ var extend = function(out) {
 };
 
 extend({}, objA, objB);
+//47.判断是否在数组内inArray
+$.inArray(item, array);
+/*——*/
+array.indexOf(item);
+//48.判断是否为数组
+$.isArray(arr);
+/*——*/
+Array.isArray(arr);
+//49.map循环
+$.map(array,function(val,index){
+	//dosomething
+});
+/*——*/
+arr.map(function(val,index){
+
+})
+//50.时间
+$.now();
+/*——*/
+Date.now();
+//51.转换HTML
+$.parseHTML(htmlString);
+/*——*/
+var parseHTML = function(str) {
+  var tmp = document.implementation.createHTMLDocument();
+  tmp.body.innerHTML = str;
+  return tmp.body.children;
+};
+
+parseHTML(htmlString);
+//52.json数据转换
+$.parseJSON(string);
+/*——*/
+JSON.parse(string);
+//53.去空格
+$.trim(string);
+/*——*/
+string.trim();
+//54.确定对象类型
+$.type(obj);
+/*——*/
+Object.prototype.toString.call(obj).replace(/^\[object (.+)\]$/, '$1').toLowerCase();
