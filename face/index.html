@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta name="format-detection" content="telephone=no"/>
+	<title>笑脸检测</title>
+	<style>
+		#checkBtn{
+			display: inline-block;
+			color: #FFF;
+			background-color: #ff6d00;
+			padding: 5px 15px;
+			border-radius: 3px;
+			text-decoration: none;
+		}
+		#imgBox img{
+			width: 200px;
+			display: inline-block;
+		}
+	</style>
+</head>
+<body>
+	<div id="img"></div>
+	<input id="files" type="file" name="img">
+	<a id="checkBtn" href="javascript:;" onclick="handlePic()">查看</a>
+	<div id="imgBox"></div>
+	<div id="smile"></div>
+	<div id="msgBox"></div>
+	<script type="text/javascript">
+
+		var msgBox = document.getElementById("msgBox");
+		function handlePic(){
+			var files = document.getElementById("files").files[0];
+			var imgBox = document.getElementById("imgBox");
+			var checkBtn = document.getElementById("checkBtn");
+			var reader = new FileReader();
+			reader.readAsDataURL(files);
+			var formData = new FormData();
+			checkBtn.innerText = "再来一次";
+			msgBox.innerText = "";
+			reader.onload = function(f){
+				var image = this.result;
+				var smEle = document.getElementById("smile");
+				imgBox.innerHTML = "<img src='"+ image +"' />"
+				smEle.innerText = "检测中，请稍等";
+				var data = "img="+ image;
+				formData.append("img",files);
+				formData.append("img_base64",image);
+				var request = new XMLHttpRequest();
+				request.open("POST","upload.php",true);
+				request.onprogress = upProgress;
+				request.send(formData);
+				request.onload = function(){
+
+				 	if(request.status >= 200 && request.status < 400){
+				 		//success!图片不能超过2m
+
+				 		var data = JSON.parse(request.responseText);
+				 		/*alert(11112121);
+				 		alert(request.responseText);*/
+				 		var smEle = document.getElementById("smile");
+				 		var timestate = true;
+				 		if('error_message' in data){
+				 			smEle.innerText = "系统繁忙，请重试";
+				 			alert(data.error_message);
+				 			timestate = false;
+				 		}else if(data.faces.length == 0){
+				 			smEle.innerText = "未检测到人脸，请重试";
+				 			timestate = false;
+				 		}else{	
+					 		var sm = data.faces[0].attributes.smile.value;
+					 		if(sm.toFixed(0) < data.faces[0].attributes.smile.threshold){
+					 			smEle.innerText = "没有笑哦！";	
+					 		}else{
+						 		smEle.innerText = "笑容指数为："+ sm.toFixed(0) +" (满分100)";
+					 		}
+					 		timestate = false;
+				 		}
+				 		var t = setTimeout(function(){
+				 			//返回无数据，超时，操作
+				 			if(timestate){
+				 				console.log("无返回值1！！！");
+				 			}
+				 		},10000);
+				 	}else{
+				 		console.log("err");
+				 		alert("请求超时，无返回值2");
+				 	}
+				 };
+				 request.timeout = 10000;
+				 request.ontimeout = function(event){
+				 	alert("请求超时！");
+				 }
+			}
+		}
+		function upProgress(event){
+			console.log(event);
+			if(event.lengthComputable){
+				var percent = event.loaded / event.total;
+				msgBox.innerText = "上传进度：" + percent;
+			}
+		}
+	</script>
+</body>
+</html>
