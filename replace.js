@@ -35,6 +35,35 @@ request.open('POST', '/my/url', true);
 request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
 request.send(data);
 
+//promise版本ajax
+function ajax(method, url, data) {
+    var request = new XMLHttpRequest();
+    return new Promise(function (resolve, reject) {
+        request.onreadystatechange = function () {
+            if (request.readyState === 4) {
+                if (request.status === 200) {
+                    resolve(request.responseText);
+                } else {
+                    reject(request.status);
+                }
+            }
+        };
+        request.open(method, url);
+        request.send(data);
+    });
+}
+var log = document.getElementById('test-promise-ajax-result');
+var p = ajax('GET', '/api/categories');
+p.then(function (text) { // 如果AJAX成功，获得响应内容
+    log.innerText = text;
+}).catch(function (status) { // 如果AJAX失败，获得响应代码
+    log.innerText = 'ERROR: ' + status;
+});
+
+request.timeout = 10000;
+ request.ontimeout = function(event){
+  console.log("请求超时！");
+ }
 //动画效果篇
 //1.fadeIn
 $(el).fadeIn();
