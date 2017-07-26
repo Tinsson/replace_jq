@@ -18,3 +18,17 @@ var sign = "";
 for(var i = 0;i < 16;i++){
 	sign += chars[Math.floor(Math.random() * 61)];
 }
+
+//倒计时代码
+function backtime(){
+    var num = parseInt($(".num").text());//开始时间
+    if(num != 0){
+        $(".num").text(num - 1);
+    }else{
+        window.location.href = url;
+    }
+    var t = setTimeout(function(){
+        backtime();
+    },1000)
+}
+backtime();
